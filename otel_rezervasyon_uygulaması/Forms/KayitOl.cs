@@ -31,11 +31,11 @@ namespace otel_rezervasyon_uygulaması.Forms
 
             string ad = textBox1.Text;
             string soyad = textBox2.Text;
-            string cinsiyet = textBox3.Text;
+            string cinsiyet = comboBox1.Text;
             string email = textBox4.Text;
             string telefon = textBox5.Text;
-            string hobi = textBox6.Text;
             string sifre = textBox7.Text;
+            string sifreTekrar = textBox8.Text;
 
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -49,8 +49,8 @@ namespace otel_rezervasyon_uygulaması.Forms
                     string.IsNullOrWhiteSpace(cinsiyet) ||
                     string.IsNullOrWhiteSpace(email) ||
                     string.IsNullOrWhiteSpace(telefon) ||
-                    string.IsNullOrWhiteSpace(hobi) ||
-                    string.IsNullOrWhiteSpace(sifre))
+                    string.IsNullOrWhiteSpace(sifre) ||
+                    string.IsNullOrWhiteSpace(sifreTekrar))
                 {
                     MessageBox.Show("Tüm alanların doldurulması gerekmektedir.");
                     return;  // İşlemi durdurun
@@ -78,7 +78,11 @@ namespace otel_rezervasyon_uygulaması.Forms
                     MessageBox.Show("Geçersiz telefon numarası.");
                     return;  // İşlemi durdurun
                 }
-
+                if(sifre != sifreTekrar)
+                {
+                    MessageBox.Show("Şifreler uyuşmuyor lüfen alanları kontrol ediniz.");
+                    return;
+                }
                 // Fonksiyon: Telefon numarasını doğrulamak için
                 bool IsPhoneNumberValid(string phone)
                 {
@@ -108,8 +112,8 @@ namespace otel_rezervasyon_uygulaması.Forms
 
 
                 // INSERT INTO sorgusunu hazırla
-                string query = "INSERT INTO Kullanicilar (ad, soyad, cinsiyet, email, telefon, hobi,sifre) " +
-                               "VALUES (@Ad, @Soyad, @Cinsiyet, @Email, @Telefon, @Hobi, @Sifre)";
+                string query = "INSERT INTO Kullanicilar (ad, soyad, cinsiyet, email, telefon,sifre) " +
+                               "VALUES (@Ad, @Soyad, @Cinsiyet, @Email, @Telefon, @Sifre)";
 
                 // Komutu oluştur ve parametreleri ekle
                 using (SqlCommand command = new SqlCommand(query, connection))
@@ -120,7 +124,6 @@ namespace otel_rezervasyon_uygulaması.Forms
                     command.Parameters.AddWithValue("@Cinsiyet", cinsiyet);
                     command.Parameters.AddWithValue("@Email", email);
                     command.Parameters.AddWithValue("@Telefon", telefon);
-                    command.Parameters.AddWithValue("@Hobi", hobi);
                     command.Parameters.AddWithValue("@Sifre", sifre);
                     // Komutu çalıştır
 
@@ -133,7 +136,7 @@ namespace otel_rezervasyon_uygulaması.Forms
                         this.Hide();
                         KarsilamaEkrani karsilamaEkrani = new KarsilamaEkrani();
                         karsilamaEkrani.ShowDialog();
-                        
+
                     }
                     else
                     {
@@ -170,10 +173,16 @@ namespace otel_rezervasyon_uygulaması.Forms
         }
 
         private void button3_Click(object sender, EventArgs e)
-        {
+        {   
+            this.Hide();
             KarsilamaEkrani karsilamaEkrani = new KarsilamaEkrani();
             karsilamaEkrani.ShowDialog();
-            this.Hide();
+            
+        }
+
+        private void textBox5_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            e.Handled = !char.IsDigit(e.KeyChar) && !char.IsControl(e.KeyChar);
         }
     }
 }
