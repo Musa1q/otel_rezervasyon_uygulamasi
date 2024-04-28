@@ -38,6 +38,7 @@
             label1 = new Label();
             pictureBox3 = new PictureBox();
             label2 = new Label();
+            button1 = new Button();
             ((System.ComponentModel.ISupportInitialize)pictureBox1).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox2).BeginInit();
             ((System.ComponentModel.ISupportInitialize)pictureBox3).BeginInit();
@@ -141,12 +142,25 @@
             label2.TabIndex = 9;
             label2.Text = "Giriş Ekranı";
             // 
+            // button1
+            // 
+            button1.BackColor = Color.LightGray;
+            button1.FlatStyle = FlatStyle.Flat;
+            button1.Location = new Point(253, 444);
+            button1.Name = "button1";
+            button1.Size = new Size(109, 31);
+            button1.TabIndex = 10;
+            button1.Text = "Giriş Yap";
+            button1.UseVisualStyleBackColor = false;
+            button1.Click += button1_Click_1;
+            // 
             // GirisForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.LightGray;
             ClientSize = new Size(419, 561);
+            Controls.Add(button1);
             Controls.Add(label2);
             Controls.Add(pictureBox3);
             Controls.Add(label1);
@@ -180,5 +194,6 @@
         private Label label1;
         private PictureBox pictureBox3;
         private Label label2;
+        private Button button1;
     }
 }

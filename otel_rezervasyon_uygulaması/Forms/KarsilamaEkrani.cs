@@ -18,18 +18,20 @@ namespace otel_rezervasyon_uygulaması.Forms
         }
 
         private void girisButton_Click(object sender, EventArgs e)
-        {
+        {   
+            this.Hide();
             GirisForm girisForm = new GirisForm();
             girisForm.ShowDialog();
-            this.Hide();
+            
 
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
+            this.Hide();
             KayitOl kayitOl = new KayitOl();
             kayitOl.Show();
-            this.Hide();
+            
         }
     }
 }

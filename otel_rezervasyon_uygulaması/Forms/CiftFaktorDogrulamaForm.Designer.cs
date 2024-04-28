@@ -142,6 +142,7 @@
             label4.TabIndex = 14;
             label4.Text = "Kodu Yanlış Girdiniz. Lütfen Tekrar Deneyin.";
             label4.Visible = false;
+            label4.Click += label4_Click;
             // 
             // CiftFaktorDogrulamaForm
             // 

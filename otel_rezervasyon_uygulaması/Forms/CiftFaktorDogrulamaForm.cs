@@ -12,9 +12,10 @@ using System.Windows.Forms;
 
 namespace otel_rezervasyon_uygulaması.Forms
 {
+
     public partial class CiftFaktorDogrulamaForm : Form
     {
-        private int countdownValue = 30;
+        private int countdownValue = 60;
         public int verificationCode { get; set; }
         public string aliciMail { get; set; }
 
@@ -26,11 +27,13 @@ namespace otel_rezervasyon_uygulaması.Forms
 
         private void CiftFaktorDogrulamaForm_Load(object sender, EventArgs e)
         {
-            timerCountdown.Interval = 600;
+
+            timerCountdown.Interval = 1000;
             timerCountdown.Tick += timerCountdown_Tick_1;
 
             labelCountdown.Text = countdownValue.ToString();
             StartCountdown();
+
         }
         private void StartCountdown()
         {
@@ -124,6 +127,11 @@ namespace otel_rezervasyon_uygulaması.Forms
 
             // E-posta gönder
             client.Send(mm);
+        }
+
+        private void label4_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
