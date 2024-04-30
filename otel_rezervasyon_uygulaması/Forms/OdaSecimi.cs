@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Data.SqlClient;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -21,24 +22,42 @@ namespace otel_rezervasyon_uygulaması.Forms
 
         private void OdaSecimi_Load(object sender, EventArgs e)
         {
-            dateTimePicker1.MinDate = DateTime.Today;
-            dateTimePicker2.MinDate = DateTime.Today;
-
-            if (odaId == "1")
-            {
-                numericUpDown1.Value = 1;
-                numericUpDown1.Enabled = false;
-                numericUpDown2.Enabled = false;
-
-            }
-            else if (odaId == "2")
-            {
-                numericUpDown1.Minimum = 1;
-                numericUpDown1.Maximum = 2;
-                numericUpDown2.Maximum = 1;
-
-            }
+             
+            label7.Text = BosOdaSayisiniGetir().ToString();
         }
+
+        
+
+        public int BosOdaSayisiniGetir()
+        {
+
+            string connectionString = "Data Source=(localdb)\\MSSQLLocalDB;Initial Catalog=OtelContext;Integrated Security=True";
+            int oda_tipi = Convert.ToInt32(odaId);
+            int bosOdaSayisi = 0; // Başlangıçta boş oda sayısını sıfıra eşitle
+
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+                string query = "SELECT oda_tipi, durum FROM Odalar WHERE oda_tipi = @oda_tipi AND durum = 0";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@oda_tipi", oda_tipi);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            bosOdaSayisi++;
+                        }
+                    }
+                }
+            }
+
+            return bosOdaSayisi; // Boş oda sayısını geri döndür
+        }
+
 
         private void pictureBox1_Click(object sender, EventArgs e)
         {
@@ -50,61 +69,12 @@ namespace otel_rezervasyon_uygulaması.Forms
 
 
         }
+ 
 
-        public void tekOdaUcretHesapla(int days)
-        {
-            int hesapla = 890 * days;
-            label10.Text = hesapla.ToString();
-        }
+            private void button1_Click(object sender, EventArgs e)
+        { 
 
-        public void ciftOdaUcretHesapla(int days , int yetiskin)
-        {
-            int ucret = yetiskin * 890;
-            int hesapla = ucret * days;
-            label10.Text = hesapla.ToString();
-        }
-
-        public void ciftOdaUcretHesapla2(int days, int yetiskin, int cocuk)
-        {
-            int ucret = (yetiskin * 890) + (cocuk * 445);
-            int hesapla = ucret * days;
-            label10.Text = hesapla.ToString();
-        
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            DateTime startDate = dateTimePicker1.Value;
-            DateTime endDate = dateTimePicker2.Value;
-
-
-            // İki tarih arasındaki farkı hesaplama
-            TimeSpan difference = endDate - startDate;
-
-
-            // İki tarih arasındaki gün sayısını hesaplama
-            int daysDifference = difference.Days;
-
-            if (odaId == "1")
-            {
-                tekOdaUcretHesapla(daysDifference);
-            }
-            else if (odaId == "2") {
-                if (numericUpDown1.Value == 2) {
-                    ciftOdaUcretHesapla(daysDifference, (int)numericUpDown1.Value);
-                }else if(numericUpDown1.Value == 1) { 
-                    if(numericUpDown2.Value == 1) {
-                        ciftOdaUcretHesapla2(daysDifference, (int)numericUpDown1.Value, (int)numericUpDown2.Value);
-                    }
-                }
-            }
-            else if (odaId == "3")
-            {
-                //burada kaldın
-                //Veritabanına kaydet rezervasyonları kullanıcın adını ve oda numarasını hangi tarih aralarında kalacaklarını
-                //
-            }
-
+ 
 
         }
 
@@ -118,21 +88,20 @@ namespace otel_rezervasyon_uygulaması.Forms
 
         private void button2_Click(object sender, EventArgs e)
         {
-            if (numericUpDown1.Value > 1)
+
+            if (BosOdaSayisiniGetir() < 1)
             {
-                if (numericUpDown2.Value == 1)
-                {
-                    MessageBox.Show("İki kişilik oda 3 kişi kalamazsınız!");
-                }
-            }else if (numericUpDown1.Value == 1)
+                MessageBox.Show("Rezervasyon Alınamaz.\nOdalar Dolu : " + BosOdaSayisiniGetir());
+            }
+            else
             {
-                if (numericUpDown2.Value == 0)
-                {
-                    MessageBox.Show("İki kişilik odada tek kişilik kalamazsınız!");
-                }
+                RezervasyonForm rezervasyonForm = new RezervasyonForm();
+                rezervasyonForm.odaId = this.odaId;
+                rezervasyonForm.ShowDialog();
+
             }
 
-
+            
 
         }
     }

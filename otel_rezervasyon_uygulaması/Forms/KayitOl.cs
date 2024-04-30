@@ -115,35 +115,51 @@ namespace otel_rezervasyon_uygulaması.Forms
                 string query = "INSERT INTO Kullanicilar (ad, soyad, cinsiyet, email, telefon,sifre) " +
                                "VALUES (@Ad, @Soyad, @Cinsiyet, @Email, @Telefon, @Sifre)";
 
+
                 // Komutu oluştur ve parametreleri ekle
-                using (SqlCommand command = new SqlCommand(query, connection))
+
+
+                SqlTransaction transaction = connection.BeginTransaction();
+
+                try
                 {
-
-                    command.Parameters.AddWithValue("@Ad", ad);
-                    command.Parameters.AddWithValue("@Soyad", soyad);
-                    command.Parameters.AddWithValue("@Cinsiyet", cinsiyet);
-                    command.Parameters.AddWithValue("@Email", email);
-                    command.Parameters.AddWithValue("@Telefon", telefon);
-                    command.Parameters.AddWithValue("@Sifre", sifre);
-                    // Komutu çalıştır
-
-                    int rowsAffected = command.ExecuteNonQuery();
-
-                    // Ekleme işleminin sonucunu kontrol et
-                    if (rowsAffected > 0)
+                    // İlk sorguyu çalıştır
+                    using (SqlCommand command1 = new SqlCommand(query, connection, transaction))
                     {
-                        MessageBox.Show("Kullanıcı başarıyla eklendi!");
-                        this.Hide();
-                        KarsilamaEkrani karsilamaEkrani = new KarsilamaEkrani();
-                        karsilamaEkrani.ShowDialog();
+                        // Parametreleri ekle
+                        command1.Parameters.AddWithValue("@Ad", ad);
+                        command1.Parameters.AddWithValue("@Soyad", soyad);
+                        command1.Parameters.AddWithValue("@Cinsiyet", cinsiyet);
+                        command1.Parameters.AddWithValue("@Email", email);
+                        command1.Parameters.AddWithValue("@Telefon", telefon);
+                        command1.Parameters.AddWithValue("@Sifre", sifre);
 
-                    }
-                    else
-                    {
-                        MessageBox.Show("Kullanıcı eklenirken bir hata meydana geldi.");
+                        // Komutu çalıştır
+                        int rowsAffected1 = command1.ExecuteNonQuery();
+
+                        // Ekleme işleminin sonucunu kontrol et
+                        if (rowsAffected1 <= 0)
+                        {
+                            throw new Exception("Kullanıcı eklenirken bir hata meydana geldi.");
+                        }
                     }
 
+
+                    transaction.Commit();
+                    MessageBox.Show("Kullanıcı ve Müşteri başarıyla eklendi!");
+                    this.Hide();
+                    KarsilamaEkrani karsilamaEkrani = new KarsilamaEkrani();
+                    karsilamaEkrani.ShowDialog();
                 }
+                catch (Exception ex)
+                {
+                    // Bir hata olursa, işlemi geri al
+                    transaction.Rollback();
+                    MessageBox.Show("Hata: " + ex.Message);
+                }
+
+
+
 
                 // Bağlantıyı kapat
                 connection.Close();
